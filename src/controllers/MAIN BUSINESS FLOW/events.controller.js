@@ -93,11 +93,18 @@ exports.updateEvent = async (request, response) => {
 exports.createInsertEvent = async (request, response) => {
     try {
         const {id} = request.user
-        const data = {
+        let data = {
             ...request.body
         }
         if(request.file) {
             data.picture = request.file.path
+        }
+        if(data.location || data.price || data.category){
+            const updatedLocation = data.location[1]
+            const updatedprice = data.price[1]
+            const updatedcategory = data.category[1]
+            const updatedData = { ...data, location: updatedLocation, price: updatedprice, category:updatedcategory }
+            data = updatedData
         }
         const createEvent = await eventsModel.insert(data, id)
         const idEvent = createEvent.event.id
