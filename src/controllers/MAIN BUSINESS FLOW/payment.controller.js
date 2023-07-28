@@ -16,11 +16,13 @@ exports.getAllPayment = async(req, res) => {
 
 exports.createPayment = async (request, response) => {
     try {
-        const {id:userId} = request.user
+        const {id} = request.user
         const statusId = 2
         const {reservationId, paymentMethodId, quantity} = request.body
+        console.log(id, reservationId, paymentMethodId, quantity)
         const findReservation = await reservationsModel.findOne(reservationId)
-        if(findReservation.userId !== userId) {
+        console.log(findReservation)
+        if(findReservation.userId !== id) {
             throw Error("unauthorized")
         }
         const update = await reservationsModel.update(reservationId, {paymentMethodId, statusId})
