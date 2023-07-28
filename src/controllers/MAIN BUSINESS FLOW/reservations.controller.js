@@ -25,10 +25,10 @@ exports.createInsertReservations = async (request, response) => {
         const results = {
             reservationId: insertTickets.id,
             ticketSection: section.name,
-            quantity: insertTickets.quantity,
+            quantity: quantity,
             totalPayment: `$${total}`
         }
-
+        console.log(results)
         if(!results) {
             throw Error("reservations_not_found")
         }else {

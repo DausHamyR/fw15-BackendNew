@@ -18,33 +18,21 @@ exports.createPayment = async (request, response) => {
     try {
         const {id} = request.user
         const statusId = 2
-        const {reservationId, paymentMethodId, quantity} = request.body
-        console.log(id, reservationId, paymentMethodId, quantity)
-        const findReservation = await reservationsModel.findOne(reservationId)
-        console.log(findReservation)
-        if(findReservation.userId !== id) {
-            throw Error("unauthorized")
-        }
+        const {reservationId, paymentMethodId} = request.body
         const update = await reservationsModel.update(reservationId, {paymentMethodId, statusId})
         const findPaymentMethod = await paymentModel.findOne(paymentMethodId)
         const findTickets = await ticketsModel.findOneByReservationId(update.id)
         const section = await sectionModel.findOne(findTickets.sectionId)
         const findEvent = await eventModel.findOne(update.eventId)
-        if(!findReservation) {
-            throw Error("reservations_not_found")
-        }
         if(!findPaymentMethod) {
             throw Error("payment_not_available")
         }
         const result = {
-            id: findReservation.id,
             events: findEvent.title,
             ticketSection: section.name,
-            quantity: quantity,
             pricePerTicket: section.price,
             totalPrice: findTickets.quantity * section.price,
         }
-        // insertPayment
         return response.json({
             success: true,
             message: "Create payment successfully",

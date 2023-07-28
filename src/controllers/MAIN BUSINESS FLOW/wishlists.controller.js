@@ -79,14 +79,9 @@ exports.createInsertWishlists = async (request, response) => {
     try {
         const {id} = request.user
         const {eventId} = request.body
-        console.log('1')
-        console.log(id, eventId, 'cek')
         const insertEvent = await eventModel.update(eventId, {createdBy: id})
-        console.log('2')
         const cekEventId = await eventModel.findOne(eventId)
-        console.log(insertEvent, '3')
         const insertWishlists = await wishlistsModel.insertWishlists(eventId, id)
-        console.log('4')
         if(!cekEventId) {
             throw Error("event_not_found")
         }else {
