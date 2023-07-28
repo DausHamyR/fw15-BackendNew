@@ -71,12 +71,20 @@ exports.updateEvent = async (request, response) => {
     try {
         const {id} = request.user
         const idParams = request.params.id
-        const data = {
+        let data = {
             ...request.body
         }
         if(request.file) {
             data.picture = request.file.path
         }
+        if(data.location || data.price || data.category){
+            const updatedLocation = data.location[1]
+            const updatedprice = data.price[1]
+            const updatedcategory = data.category[1]
+            const updatedData = { ...data, location: updatedLocation, price: updatedprice, category:updatedcategory }
+            data = updatedData
+        }
+        console.log(data)
         const updateEvent = await eventsModel.updateEvent(id, idParams, data)
         const updateCategories = await eventCategoriesModel.updateManage(updateEvent.id, data.category)
         const results = [updateEvent, updateCategories]
