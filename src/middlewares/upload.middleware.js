@@ -33,7 +33,7 @@ const storage = new CloudinaryStorage({
 // })
 
 const limits = {
-    fileSize: 1 * 1024 * 1024
+    fileSize: 1 * 2024 * 2024
 }
 const fileFilter = (req, file, cb) => {
     if(file.mimetype !== "image/jpeg"){

@@ -107,6 +107,7 @@ exports.createInsertEvent = async (request, response) => {
         if(request.file) {
             data.picture = request.file.path
         }
+        console.log(data)
         if(data.location || data.price || data.category){
             const updatedLocation = data.location[1]
             const updatedprice = data.price[1]
