@@ -84,7 +84,29 @@ exports.updateEvent = async (request, response) => {
             const updatedData = { ...data, location: updatedLocation, price: updatedprice, category:updatedcategory }
             data = updatedData
         }
-        console.log(data)
+        const updateEvent = await eventsModel.updateEvent(id, idParams, data)
+        const updateCategories = await eventCategoriesModel.updateManage(updateEvent.id, data.category)
+        const results = [updateEvent, updateCategories]
+        return response.json({
+            success: true,
+            message: "Event updated",
+            results
+        })
+    }catch(err) {
+        return errorHandler(response, err)
+    }
+}
+
+exports.updateEventMobile = async (request, response) => {
+    try {
+        const {id} = request.user
+        const idParams = request.params.id
+        let data = {
+            ...request.body
+        }
+        if(request.file) {
+            data.picture = request.file.path
+        }
         const updateEvent = await eventsModel.updateEvent(id, idParams, data)
         const updateCategories = await eventCategoriesModel.updateManage(updateEvent.id, data.category)
         const results = [updateEvent, updateCategories]
@@ -107,13 +129,40 @@ exports.createInsertEvent = async (request, response) => {
         if(request.file) {
             data.picture = request.file.path
         }
-        console.log(data)
         if(data.location || data.price || data.category){
             const updatedLocation = data.location[1]
             const updatedprice = data.price[1]
             const updatedcategory = data.category[1]
             const updatedData = { ...data, location: updatedLocation, price: updatedprice, category:updatedcategory }
             data = updatedData
+        }
+        const createEvent = await eventsModel.insert(data, id)
+        const idEvent = createEvent.event.id
+        const idEventCategories = createEvent.eventCategories.id
+        const createEventCategories = await eventCategoriesModel.update(idEventCategories, idEvent)
+        const results = [createEvent.event, createEventCategories]
+        const listToken = await deviceTokenModel.findAll(1, 1000)
+        const message = listToken.map(item => ({token: item.token, notification:{title: `there is a new event ${data.name}, let's register immediately`, body: "new event join and enliven"}}))
+        const messaging = admin.messaging()
+        messaging.sendEach(message)
+        return response.json({
+            success: true,
+            message: `Create Events ${data.name} successfully`,
+            results
+        })
+    }catch(err) {
+        errorHandler(response, err)
+    }
+}
+
+exports.createInsertEventMobile = async (request, response) => {
+    try {
+        const {id} = request.user
+        let data = {
+            ...request.body
+        }
+        if(request.file) {
+            data.picture = request.file.path
         }
         const createEvent = await eventsModel.insert(data, id)
         const idEvent = createEvent.event.id
